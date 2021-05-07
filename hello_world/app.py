@@ -1,5 +1,5 @@
 import json
-
+import psycopg2
 # import requests
 
 
@@ -39,4 +39,22 @@ def lambda_handler(event, context):
             "message": "hello world",
             # "location": ip.text.replace("\n", "")
         }),
+    }
+
+
+def get_account(event, context):
+    conn = psycopg2.connect(
+        host="database-1.caxiltvpgx9v.us-east-2.rds.amazonaws.com",
+        database="matching",
+        user="postgres",
+        password="King12345")
+
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM accounts")
+    rows = cur.fetchall()
+
+    # TODO implement
+    return {
+        'statusCode': 200,
+        'body': json.dumps(rows, default=str)
     }
