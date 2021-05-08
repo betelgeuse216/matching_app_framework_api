@@ -9,6 +9,12 @@ Description: >
 Globals:
   Function:
     Timeout: 3
+    Environment:
+      Variables:
+        DB_HOST: 'database-1.caxiltvpgx9v.us-east-2.rds.amazonaws.com'
+        DB_NAME: 'matching'
+        DB_USER: 'postgres'
+        DB_PASS: 'King12345'
 
 Resources:
   HelloWorldFunction:
@@ -35,6 +41,30 @@ Resources:
           Properties:
             Path: /accounts
             Method: get
+  getProfile:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: hello_world/
+      Handler: app.get_profile
+      Runtime: python3.8
+      Events:
+        HelloWorld:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /profile/{id}
+            Method: get
+  getProfileImages:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: hello_world/
+      Handler: app.get_images_all
+      Runtime: python3.8
+      Events:
+        HelloWorld:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /profile/{id}/images
+            Method: get
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
@@ -49,6 +79,12 @@ Outputs:
   getUser:
     Description: "getUser Function ARN"
     Value: !GetAtt getUser.Arn
+  getProfile:
+    Description: "getProfile Function ARN"
+    Value: !GetAtt getProfile.Arn
+  getProfileImages:
+    Description: "getProfileImages Function ARN"
+    Value: !GetAtt getProfileImages.Arn
   HelloWorldFunctionIamRole:
     Description: "Implicit IAM Role created for Hello World function"
     Value: !GetAtt HelloWorldFunctionRole.Arn

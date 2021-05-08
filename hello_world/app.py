@@ -1,7 +1,9 @@
+import base64
 import json
 import psycopg2
+import psycopg2.extras
 # import requests
-
+import database.postgres as postgres
 
 def lambda_handler(event, context):
     """Sample pure Lambda function
@@ -43,12 +45,7 @@ def lambda_handler(event, context):
 
 
 def get_account(event, context):
-    conn = psycopg2.connect(
-        host="database-1.caxiltvpgx9v.us-east-2.rds.amazonaws.com",
-        database="matching",
-        user="postgres",
-        password="King12345")
-
+    conn = postgres.connection()
     cur = conn.cursor()
     cur.execute("SELECT * FROM accounts")
     rows = cur.fetchall()
@@ -56,5 +53,51 @@ def get_account(event, context):
     # TODO implement
     return {
         'statusCode': 200,
-        'body': json.dumps(rows, default=str)
+        'body': json.dumps({"accounts": rows}, default=str)
+    }
+
+
+def get_profile(event, context):
+    conn = postgres.connection()
+    print(event)
+    print(event)
+    print(event.get('pathParameters'))
+    parameters = event.get('pathParameters')
+    print(parameters.get('id'))
+    ids = parameters.get('id')
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM user_profile where id = %s", (ids, ))
+    return {
+        'statusCode': 200,
+        'body': json.dumps({"profile": cur.fetchone()}, default=str)
+    }
+
+
+def get_images_all(event, context):
+    conn = postgres.connection()
+    parameters = event.get('pathParameters')
+    profile_id = parameters.get('id')
+    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cur.execute("SELECT * FROM user_gallery where user_id = %s", (profile_id, ))
+    images = cur.fetchall()
+    base64_images = []
+    for image in images:
+        image_dict = dict(image)
+        print(image_dict)
+        image_b64 = None
+        print("rip")
+        if 'image_data' in image_dict:
+            print(image_dict)
+            print("convert")
+            image_b64 = base64.b64encode(image_dict.get('image_data'))
+        else:
+            print("no")
+        print(image_b64)
+        print(image_dict)
+        image_dict['image_data'] = image_b64
+        base64_images.append(image_dict)
+
+    return {
+        'statusCode': 200,
+        'body': json.dumps({"images": base64_images}, default=str)
     }
