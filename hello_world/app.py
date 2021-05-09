@@ -37,6 +37,10 @@ def lambda_handler(event, context):
 
     return {
         "statusCode": 200,
+        'headers': {
+            'Content-Type': 'application/json',
+            'Accept-Charset': 'UTF-8'
+        },
         "body": json.dumps({
             "message": "hello world",
             # "location": ip.text.replace("\n", "")
@@ -53,23 +57,32 @@ def get_account(event, context):
     # TODO implement
     return {
         'statusCode': 200,
+        'headers': {
+            'Content-Type': 'application/json',
+            'Accept-Charset': 'UTF-8'
+        },
         'body': json.dumps({"accounts": rows}, default=str)
     }
 
 
 def get_profile(event, context):
     conn = postgres.connection()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     print(event)
     print(event)
     print(event.get('pathParameters'))
     parameters = event.get('pathParameters')
     print(parameters.get('id'))
     ids = parameters.get('id')
-    cur = conn.cursor()
     cur.execute("SELECT * FROM user_profile where id = %s", (ids, ))
+    profile_dict = dict(cur.fetchone())
     return {
+        'headers': {
+            'Content-Type': 'application/json',
+            'Accept-Charset': 'UTF-8'
+        },
         'statusCode': 200,
-        'body': json.dumps({"profile": cur.fetchone()}, default=str)
+        'body': json.dumps({"profile": profile_dict}, default=str)
     }
 
 
@@ -99,5 +112,9 @@ def get_images_all(event, context):
 
     return {
         'statusCode': 200,
+        'headers': {
+            'Content-Type': 'application/json',
+            'Accept-Charset': 'UTF-8'
+        },
         'body': json.dumps({"images": base64_images}, default=str)
     }
