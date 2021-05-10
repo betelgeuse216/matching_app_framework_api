@@ -29,6 +29,18 @@ Resources:
           Properties:
             Path: /hello
             Method: get
+  testFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: hello_world/
+      Handler: app.test_json
+      Runtime: python3.8
+      Events:
+        HelloWorld:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /test
+            Method: get
   getUser:
     Type: AWS::Serverless::Function
     Properties:
@@ -85,6 +97,9 @@ Outputs:
   getProfileImages:
     Description: "getProfileImages Function ARN"
     Value: !GetAtt getProfileImages.Arn
+  testFunction:
+    Description: "testFunction Function ARN"
+    Value: !GetAtt testFunction.Arn
   HelloWorldFunctionIamRole:
     Description: "Implicit IAM Role created for Hello World function"
     Value: !GetAtt HelloWorldFunctionRole.Arn
