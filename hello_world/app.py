@@ -39,7 +39,11 @@ def lambda_handler(event, context):
         "statusCode": 200,
         'headers': {
             'Content-Type': 'application/json',
-            'Accept-Charset': 'UTF-8'
+            'Accept-Charset': 'UTF-8',
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Credentials": True,
+            "Access-Control-Allow-Headers": "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale",
+            "Access-Control-Allow-Methods": "GET, OPTIONS"
         },
         "body": json.dumps({
             "message": "hello world",
@@ -59,7 +63,12 @@ def get_account(event, context):
         'statusCode': 200,
         'headers': {
             'Content-Type': 'application/json',
-            'Accept-Charset': 'UTF-8'
+            'Accept-Charset': 'UTF-8',
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Credentials": True,
+            "Access-Control-Allow-Headers": "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale",
+            "Access-Control-Allow-Methods": "GET, OPTIONS"
+
         },
         'body': json.dumps({"accounts": rows}, default=str)
     }
@@ -70,7 +79,11 @@ def test_json(event, context):
         'statusCode': 200,
         'headers': {
             'Content-Type': 'application/json',
-            'Accept-Charset': 'UTF-8'
+            'Accept-Charset': 'UTF-8',
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Credentials": True,
+            "Access-Control-Allow-Headers": "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale",
+            "Access-Control-Allow-Methods": "GET, OPTIONS"
         },
         'body': '{"page":2,"per_page":6,"total":12,"total_pages":2,"data":[{"id":7,"email":"michael.lawson@reqres.in","first_name":"Michael","last_name":"Lawson","avatar":"https://reqres.in/img/faces/7-image.jpg"},{"id":8,"email":"lindsay.ferguson@reqres.in","first_name":"Lindsay","last_name":"Ferguson","avatar":"https://reqres.in/img/faces/8-image.jpg"},{"id":9,"email":"tobias.funke@reqres.in","first_name":"Tobias","last_name":"Funke","avatar":"https://reqres.in/img/faces/9-image.jpg"},{"id":10,"email":"byron.fields@reqres.in","first_name":"Byron","last_name":"Fields","avatar":"https://reqres.in/img/faces/10-image.jpg"},{"id":11,"email":"george.edwards@reqres.in","first_name":"George","last_name":"Edwards","avatar":"https://reqres.in/img/faces/11-image.jpg"},{"id":12,"email":"rachel.howell@reqres.in","first_name":"Rachel","last_name":"Howell","avatar":"https://reqres.in/img/faces/12-image.jpg"}],"support":{"url":"https://reqres.in/#support-heading","text":"To keep ReqRes free, contributions towards server costs are appreciated!"}}'
     }
@@ -90,7 +103,11 @@ def get_profile(event, context):
     return {
         'headers': {
             'Content-Type': 'application/json',
-            'Accept-Charset': 'UTF-8'
+            'Accept-Charset': 'UTF-8',
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Credentials": True,
+            "Access-Control-Allow-Headers": "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale",
+            "Access-Control-Allow-Methods": "GET, OPTIONS"
         },
         'statusCode': 200,
         'body': json.dumps({"profile": profile_dict}, default=str)
@@ -125,7 +142,11 @@ def get_images_all(event, context):
         'statusCode': 200,
         'headers': {
             'Content-Type': 'application/json',
-            'Accept-Charset': 'UTF-8'
+            'Accept-Charset': 'UTF-8',
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Credentials": True,
+            "Access-Control-Allow-Headers": "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale",
+            "Access-Control-Allow-Methods": "GET, OPTIONS"
         },
         'body': json.dumps({"images": base64_images}, default=str)
     }
