@@ -89,14 +89,29 @@ def test_json(event, context):
     }
 
 
+def get_profile_list(event,context):
+    conn = postgres.connection()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cur.execute("SELECT * FROM user_profile")
+    profile_dict = dict(cur.fetchall())
+    return {
+        'headers': {
+            'Content-Type': 'application/json',
+            'Accept-Charset': 'UTF-8',
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Credentials": True,
+            "Access-Control-Allow-Headers": "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale",
+            "Access-Control-Allow-Methods": "GET, OPTIONS"
+        },
+        'statusCode': 200,
+        'body': json.dumps({"profiles": profile_dict}, default=str)
+    }
+
+
 def get_profile(event, context):
     conn = postgres.connection()
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    print(event)
-    print(event)
-    print(event.get('pathParameters'))
     parameters = event.get('pathParameters')
-    print(parameters.get('id'))
     ids = parameters.get('id')
     cur.execute("SELECT * FROM user_profile where id = %s", (ids, ))
     profile_dict = dict(cur.fetchone())

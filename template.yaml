@@ -65,6 +65,18 @@ Resources:
           Properties:
             Path: /profile/{id}
             Method: get
+  getProfileList:
+    Type: AWS::Serverless:Function
+    Properties:
+      CodeUri: hello_world/
+      Handler: app.get_profile_list
+      Runtime: python3.8
+      Events:
+        HelloWorld:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /profile
+            Method: get
   getProfileImages:
     Type: AWS::Serverless::Function
     Properties:
