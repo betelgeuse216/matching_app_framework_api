@@ -92,26 +92,11 @@ def test_json(event, context):
 def get_profile_list(event, context):
     conn = postgres.connection()
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    cur.execute("SELECT up.*, ug.image_data "
+    cur.execute("SELECT up.*, ug.image_url "
                 "FROM user_profile as up "
                 "LEFT JOIN user_gallery as ug ON up.id = ug.user_id "
                 "and ug.is_main IS TRUE")
     profile_dict = cur.fetchall()
-    base64_images = []
-    for image in profile_dict:
-        print(image)
-        image_b64 = None
-        print("rip")
-        if 'image_data' in image and image.get('image_data') is not None:
-            print(image)
-            print("convert")
-            image_b64 = base64.b64encode(image.get('image_data'))
-        else:
-            print("no")
-        print(image_b64)
-        print(image)
-        image['image_data'] = image_b64
-        base64_images.append(image)
     return {
         'headers': {
             'Content-Type': 'application/json',
@@ -122,7 +107,7 @@ def get_profile_list(event, context):
             "Access-Control-Allow-Methods": "GET, OPTIONS"
         },
         'statusCode': 200,
-        'body': json.dumps({"profiles": base64_images}, default=str)
+        'body': json.dumps({"profiles": profile_dict}, default=str)
     }
 
 
@@ -151,25 +136,9 @@ def get_images_all(event, context):
     conn = postgres.connection()
     parameters = event.get('pathParameters')
     profile_id = parameters.get('id')
-    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cur.execute("SELECT * FROM user_gallery where user_id = %s", (profile_id, ))
     images = cur.fetchall()
-    base64_images = []
-    for image in images:
-        image_dict = dict(image)
-        print(image_dict)
-        image_b64 = None
-        print("rip")
-        if 'image_data' in image_dict:
-            print(image_dict)
-            print("convert")
-            image_b64 = base64.b64encode(image_dict.get('image_data'))
-        else:
-            print("no")
-        print(image_b64)
-        print(image_dict)
-        image_dict['image_data'] = image_b64
-        base64_images.append(image_dict)
 
     return {
         'statusCode': 200,
@@ -181,5 +150,5 @@ def get_images_all(event, context):
             "Access-Control-Allow-Headers": "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale",
             "Access-Control-Allow-Methods": "GET, OPTIONS"
         },
-        'body': json.dumps({"images": base64_images}, default=str)
+        'body': json.dumps({"images": images}, default=str)
     }
