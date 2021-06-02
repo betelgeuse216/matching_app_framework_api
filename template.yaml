@@ -11,10 +11,10 @@ Globals:
     Timeout: 3
     Environment:
       Variables:
-        DB_HOST: 'database-1.caxiltvpgx9v.us-east-2.rds.amazonaws.com'
-        DB_NAME: 'matching'
-        DB_USER: 'postgres'
-        DB_PASS: 'King12345'
+        DB_HOST: 'matching-app.c7sscag513cv.ap-northeast-2.rds.amazonaws.com'
+        DB_NAME: 'matching_app'
+        DB_USER: 'matching_user'
+        DB_PASS: 'Matching1234'
 
 Resources:
   HelloWorldFunction:
