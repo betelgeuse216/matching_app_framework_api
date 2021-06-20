@@ -105,7 +105,7 @@ def set_gender_interested_in(event, context):
     user_id = event['Authorization']
     print(user_id)
     if user_id is None:
-        return httpUtil.response({""}, 400, "POST, OPTIONS")
+        return httpUtil.response({""}, 400, "PUT, OPTIONS")
 
     conn = postgres.connection()
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -113,7 +113,7 @@ def set_gender_interested_in(event, context):
     date_profile = dict(cur.fetchone())
 
     if date_profile is None:
-        return httpUtil.response({""}, 400, "POST, OPTIONS")
+        return httpUtil.response({""}, 400, "PUT, OPTIONS")
 
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute("DELETE dating_profile_id WHERE dating_profile_id = %s", (date_profile.get('id'),))
@@ -126,12 +126,53 @@ def set_gender_interested_in(event, context):
         cur.execute("INSERT dating_profile_id (dating_profile_id, interested_in_gender) VALUES (%s, %s)",
                     (date_profile.get('id'), v,))
 
-    return httpUtil.response({""}, 200, "POST, OPTIONS")
+    return httpUtil.response({""}, 200, "PUT, OPTIONS")
 
-def match_time(event, context):
+def get_match_list(event, context):
     """
 
     :param event:
     :param context:
     :return:
     """
+    # FIXME: Set JWT Tokens
+    uid = 1
+    conn = postgres.connection()
+    cur = conn.cursor()
+    cur.execute("SELECT dii.id FROM dating_interested_in dii "
+                "INNER JOIN dating_profile dp on dii.dating_profile_id = dp.id "
+                "INNER JOIN accounts a on dp.user_id = a.id "
+                "WHERE a.id = %s;", uid)
+    interested_in = cur.fetchall()
+
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    cur.execute("SELECT up.*, ug.image_url, m_p.id, m_m.id "
+                "FROM user_profile as up "
+                
+                "INNER JOIN accounts as a on up.account_id = a.id "
+                "LEFT JOIN user_gallery as ug ON up.id = ug.user_id and ug.is_main IS TRUE "
+                "INNER JOIN dating_profile as dp ON a.id = dp.user_id "
+                "LEFT JOIN match as m_p on a.id = m_p.user_plus AND m_p.user_minus = %s "
+                "LEFT JOIN match as m_m on a.id = m_m.user_minus and m_m.user_plus = %s "
+                # Dating Gender Match
+                "WHERE dp.gender_id IN %s "
+                "AND m_p.id IS NULL AND m_m.id IS NULL", (uid, uid, tuple(interested_in),))
+
+    profile_dict = cur.fetchall()
+    return httpUtil.response(json.dumps({"profiles": profile_dict}, default=str), 200, "GET, OPTIONS")
+
+def match(event, context):
+    """
+
+    :param event:
+    :param context:
+    :return:
+    """
+    uid = 1
+    uuid = event['interested_in_id']
+    conn = postgres.connection()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur.execute("INSERT INTO match (user_plus, user_minus, status) VALUES (%s, %s, 0)", (uid, uuid))
+    return
+
