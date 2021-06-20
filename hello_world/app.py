@@ -29,6 +29,12 @@ from util import httpUtil
 
 
 def get_account(event, context):
+    """
+
+    :param event:
+    :param context:
+    :return:
+    """
     conn = postgres.connection()
     cur = conn.cursor()
     cur.execute("SELECT * FROM accounts")
@@ -39,6 +45,12 @@ def get_account(event, context):
 
 
 def get_profile_list(event, context):
+    """
+
+    :param event:
+    :param context:
+    :return:
+    """
     conn = postgres.connection()
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cur.execute("SELECT up.*, ug.image_url "
@@ -46,61 +58,39 @@ def get_profile_list(event, context):
                 "LEFT JOIN user_gallery as ug ON up.id = ug.user_id "
                 "and ug.is_main IS TRUE")
     profile_dict = cur.fetchall()
-    return {
-        'headers': {
-            'Content-Type': 'application/json',
-            'Accept-Charset': 'UTF-8',
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Credentials": True,
-            "Access-Control-Allow-Headers": "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale",
-            "Access-Control-Allow-Methods": "GET, OPTIONS"
-        },
-        'statusCode': 200,
-        'body': json.dumps({"profiles": profile_dict}, default=str)
-    }
+    return httpUtil.response(json.dumps({"profiles": profile_dict}, default=str), 200, "GET, OPTIONS")
 
 
 def get_profile(event, context):
+    """
+
+    :param event:
+    :param context:
+    :return:
+    """
     conn = postgres.connection()
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     parameters = event.get('pathParameters')
     ids = parameters.get('id')
     cur.execute("SELECT * FROM user_profile where id = %s", (ids,))
     profile_dict = dict(cur.fetchone())
-    return {
-        'headers': {
-            'Content-Type': 'application/json',
-            'Accept-Charset': 'UTF-8',
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Credentials": True,
-            "Access-Control-Allow-Headers": "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale",
-            "Access-Control-Allow-Methods": "GET, OPTIONS"
-        },
-        'statusCode': 200,
-        'body': json.dumps({"profile": profile_dict}, default=str)
-    }
+    return httpUtil.response(json.dumps({"profile": profile_dict}, default=str), 200, "GET, OPTIONS")
 
 
 def get_images_all(event, context):
+    """
+
+    :param event:
+    :param context:
+    :return:
+    """
     conn = postgres.connection()
     parameters = event.get('pathParameters')
     profile_id = parameters.get('id')
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cur.execute("SELECT * FROM user_gallery where user_id = %s", (profile_id,))
     images = cur.fetchall()
-
-    return {
-        'statusCode': 200,
-        'headers': {
-            'Content-Type': 'application/json',
-            'Accept-Charset': 'UTF-8',
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Credentials": True,
-            "Access-Control-Allow-Headers": "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale",
-            "Access-Control-Allow-Methods": "GET, OPTIONS"
-        },
-        'body': json.dumps({"images": images}, default=str)
-    }
+    return httpUtil.response(json.dumps({"images": images}, default=str), 200, "GET, OPTIONS")
 
 
 def set_gender_interested_in(event, context):
@@ -115,20 +105,7 @@ def set_gender_interested_in(event, context):
     user_id = event['Authorization']
     print(user_id)
     if user_id is None:
-        return {"statusCode": 400,
-                'headers': {
-                    'Content-Type': 'application/json',
-                    'Accept-Charset': 'UTF-8',
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Credentials": True,
-                    "Access-Control-Allow-Headers": "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale",
-                    "Access-Control-Allow-Methods": "GET, OPTIONS"
-                },
-                "body": json.dumps({
-                    "message": "hello world",
-                    # "location": ip.text.replace("\n", "")
-                })
-                }
+        return httpUtil.response({""}, 400, "POST, OPTIONS")
 
     conn = postgres.connection()
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -136,20 +113,7 @@ def set_gender_interested_in(event, context):
     date_profile = dict(cur.fetchone())
 
     if date_profile is None:
-        return {"statusCode": 400,
-                'headers': {
-                    'Content-Type': 'application/json',
-                    'Accept-Charset': 'UTF-8',
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Credentials": True,
-                    "Access-Control-Allow-Headers": "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale",
-                    "Access-Control-Allow-Methods": "GET, OPTIONS"
-                },
-                "body": json.dumps({
-                    "message": "hello world",
-                    # "location": ip.text.replace("\n", "")
-                })
-                }
+        return httpUtil.response({""}, 400, "POST, OPTIONS")
 
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute("DELETE dating_profile_id WHERE dating_profile_id = %s", (date_profile.get('id'),))
@@ -162,17 +126,12 @@ def set_gender_interested_in(event, context):
         cur.execute("INSERT dating_profile_id (dating_profile_id, interested_in_gender) VALUES (%s, %s)",
                     (date_profile.get('id'), v,))
 
-    return {"statusCode": 200,
-            'headers': {
-                'Content-Type': 'application/json',
-                'Accept-Charset': 'UTF-8',
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Credentials": True,
-                "Access-Control-Allow-Headers": "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale",
-                "Access-Control-Allow-Methods": "GET, OPTIONS"
-            },
-            "body": json.dumps({
-                "message": "hello world",
-                # "location": ip.text.replace("\n", "")
-            })
-            }
+    return httpUtil.response({""}, 200, "POST, OPTIONS")
+
+def match_time(event, context):
+    """
+
+    :param event:
+    :param context:
+    :return:
+    """

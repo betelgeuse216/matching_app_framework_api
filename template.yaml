@@ -85,9 +85,6 @@ Outputs:
   HelloWorldApi:
     Description: "API Gateway endpoint URL for Prod stage for Hello World function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
-  HelloWorldFunction:
-    Description: "Hello World Lambda Function ARN"
-    Value: !GetAtt HelloWorldFunction.Arn
   getUser:
     Description: "getUser Function ARN"
     Value: !GetAtt getUser.Arn
@@ -100,9 +97,6 @@ Outputs:
   setGenderInterestedIn:
     Description: "getGenderInterestedIn Function ARN"
     Value: !GetAtt setGenderInterestedIn.Arn
-  testFunction:
-    Description: "testFunction Function ARN"
-    Value: !GetAtt testFunction.Arn
   HelloWorldFunctionIamRole:
     Description: "Implicit IAM Role created for Hello World function"
     Value: !GetAtt HelloWorldFunctionRole.Arn
