@@ -101,7 +101,18 @@ Resources:
           Properties:
             Path: /match
             Method: post
-
+  matched_list:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: hello_world/
+      Handler: app.match_list
+      Runtime: python3.8
+      Events:
+        HelloWorld:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /match_list
+            Method: get
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
@@ -128,6 +139,9 @@ Outputs:
   match:
     Description: "match Function ARN"
     Value: !GetAtt match.Arn
+  matched_list:
+    Description: "matched_list Function ARN"
+    Value: !GetAtt matched_list.Arn
   HelloWorldFunctionIamRole:
     Description: "Implicit IAM Role created for Hello World function"
     Value: !GetAtt HelloWorldFunctionRole.Arn

@@ -158,7 +158,7 @@ def get_match_list(event, context):
                 "LEFT JOIN match as m_m on a.id = m_m.user_minus and m_m.user_plus = %s "
                 # Dating Gender Match
                 "WHERE dp.gender_id IN %s "
-                "AND m_p.id IS NULL AND m_m.id IS NULL", (uid, uid, tuple(interested_in),))
+                "AND m_p.id IS NULL", (uid, uid, tuple(interested_in),))
 
     profile_dict = cur.fetchall()
     return httpUtil.response(json.dumps({"profiles": profile_dict}, default=str), 200, "GET, OPTIONS")
@@ -178,3 +178,27 @@ def match(event, context):
     cur.execute("INSERT INTO match (user_plus, user_minus, status) "
                 "VALUES (%s, %s, 1)",
                 (uid, uuid))
+    return httpUtil.response(json.dumps({}), 200, "POST, OPTIONS")
+
+
+def match_list(event, context):
+    """
+
+    :param event:
+    :param context:
+    :return:
+    """
+    uid = 1
+    conn = postgres.connection()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur.execute("SELECT * FROM match as m where user_plus = %s and status = 1", uid)
+    liked_matched_list = cur.fetchall()
+    matched_list = []
+    for k,v in liked_matched_list:
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        cur.execute("SELECT * FROM match as m where user_minus = %s and user_plus = %s and status = 1", uid, v.id)
+        receive_matched_list = cur.fetchall()
+        for k,v in receive_matched_list:
+            matched_list.append(v)
+
+    return httpUtil.response(json.dumps({'matched': matched_list}), 200, "GET, OPTIONS")
