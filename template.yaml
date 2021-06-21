@@ -77,6 +77,31 @@ Resources:
           Properties:
             Path: /profile/date/gender
             Method: post
+  getMatchList:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: hello_world/
+      Handler: app.get_match_list
+      Runtime: python3.8
+      Events:
+        HelloWorld:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /match
+            Method: get
+  match:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: hello_world/
+      Handler: app.match
+      Runtime: python3.8
+      Events:
+        HelloWorld:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /match
+            Method: post
+
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
@@ -97,6 +122,12 @@ Outputs:
   setGenderInterestedIn:
     Description: "getGenderInterestedIn Function ARN"
     Value: !GetAtt setGenderInterestedIn.Arn
+  getMatchList:
+    Description: "getMatchList Function ARN"
+    Value: !GetAtt getMatchList.Arn
+  match:
+    Description: "match Function ARN"
+    Value: !GetAtt match.Arn
   HelloWorldFunctionIamRole:
     Description: "Implicit IAM Role created for Hello World function"
     Value: !GetAtt HelloWorldFunctionRole.Arn

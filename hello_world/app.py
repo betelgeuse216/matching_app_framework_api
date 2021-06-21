@@ -128,6 +128,7 @@ def set_gender_interested_in(event, context):
 
     return httpUtil.response({""}, 200, "PUT, OPTIONS")
 
+
 def get_match_list(event, context):
     """
 
@@ -162,6 +163,7 @@ def get_match_list(event, context):
     profile_dict = cur.fetchall()
     return httpUtil.response(json.dumps({"profiles": profile_dict}, default=str), 200, "GET, OPTIONS")
 
+
 def match(event, context):
     """
 
@@ -173,6 +175,6 @@ def match(event, context):
     uuid = event['interested_in_id']
     conn = postgres.connection()
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    cur.execute("INSERT INTO match (user_plus, user_minus, status) VALUES (%s, %s, 0)", (uid, uuid))
-    return
-
+    cur.execute("INSERT INTO match (user_plus, user_minus, status) "
+                "VALUES (%s, %s, 1)",
+                (uid, uuid))
