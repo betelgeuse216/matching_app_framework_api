@@ -202,3 +202,14 @@ def match_list(event, context):
             matched_list.append(v)
 
     return httpUtil.response(json.dumps({'matched': matched_list}), 200, "GET, OPTIONS")
+
+
+def chat(event, context):
+    uid = 1
+    conn = postgres.connection()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur.execute("INSERT INTO chat "
+                "(user_send, user_receive, message, message_type) "
+                "VALUES "
+                "(%s, %s, %s, %s)", (uid, 1, "ddd", 1))
+    return
