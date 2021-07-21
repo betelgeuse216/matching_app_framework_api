@@ -102,7 +102,7 @@ def set_gender_interested_in(event, context):
 
     # FIXME: Better way of authenticating?
     # FIXME: Set JWT Tokens
-    user_id = event['Authorization']
+    user_id = 1
     print(user_id)
     if user_id is None:
         return httpUtil.response({""}, 400, "PUT, OPTIONS")
@@ -116,17 +116,17 @@ def set_gender_interested_in(event, context):
         return httpUtil.response({""}, 400, "PUT, OPTIONS")
 
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    cur.execute("DELETE dating_profile_id WHERE dating_profile_id = %s", (date_profile.get('id'),))
+    cur.execute("DELETE FROM dating_interested_in WHERE dating_profile_id = %s", (date_profile.get('id'),))
 
-    parameters = json.load(event.get('event'))
+    parameters = json.loads(event['body'])
     interested_in = parameters.get('interested_in')
-
-    for k, v in interested_in:
+    print(interested_in)
+    for v in interested_in:
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        cur.execute("INSERT dating_profile_id (dating_profile_id, interested_in_gender) VALUES (%s, %s)",
+        cur.execute("INSERT INTO dating_interested_in (dating_profile_id, interested_in_gender) VALUES (%s, %s)",
                     (date_profile.get('id'), v,))
 
-    return httpUtil.response({""}, 200, "PUT, OPTIONS")
+    return httpUtil.response(json.dumps({}), 200, "PUT, OPTIONS")
 
 
 def get_match_list(event, context):

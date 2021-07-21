@@ -101,7 +101,7 @@ Resources:
           Properties:
             Path: /match
             Method: post
-  matched_list:
+  matchedlist:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: hello_world/
@@ -151,9 +151,6 @@ Outputs:
   match:
     Description: "match Function ARN"
     Value: !GetAtt match.Arn
-  matched_list:
-    Description: "matched_list Function ARN"
-    Value: !GetAtt matched_list.Arn
-  HelloWorldFunctionIamRole:
-    Description: "Implicit IAM Role created for Hello World function"
-    Value: !GetAtt HelloWorldFunctionRole.Arn
+  matchedlist:
+    Description: "matchedlist Function ARN"
+    Value: !GetAtt matchedlist.Arn
